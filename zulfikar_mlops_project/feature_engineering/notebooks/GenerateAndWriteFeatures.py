@@ -81,13 +81,21 @@ pk_columns = dbutils.widgets.get("primary_keys")
 assert input_table_path != "", "input_table_path notebook parameter must be specified"
 assert output_table_name != "", "output_table_name notebook parameter must be specified"
 
-# Extract database name. Needs to be updated for Unity Catalog to the Schema name.
-output_database = output_table_name.split(".")[1]
+# Extract catalog and schema names for Unity Catalog (catalog.schema.table format)
+table_parts = output_table_name.split(".")
+if len(table_parts) == 3:
+    # Unity Catalog format: catalog.schema.table
+    catalog_name = table_parts[0]
+    schema_name = table_parts[1]
+    output_database = f"{catalog_name}.{schema_name}"
+else:
+    # Legacy format: database.table
+    output_database = table_parts[0]
 
 # COMMAND ----------
 
-# DBTITLE 1,Create database.
-spark.sql("CREATE DATABASE IF NOT EXISTS " + output_database)
+# DBTITLE 1,Create schema in Unity Catalog.
+spark.sql(f"CREATE SCHEMA IF NOT EXISTS {output_database}")
 
 # COMMAND ----------
 
