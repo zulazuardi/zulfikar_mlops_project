@@ -37,7 +37,7 @@ targets:
       host: https://adb-984752964297111.11.azuredatabricks.net
 
   staging:
-    mode: production
+    mode: staging
     variables:
       catalog_name: zul_staging
     workspace:
